@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using ModelLibrary;
+using SimpleRestService.DButil;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,28 +28,33 @@ namespace SimpleRestService.Controllers
 
         // GET: api/<ItemsController>
         [HttpGet]
-        public IEnumerable<Item> Get()
-        {
-            return items;
+        public IEnumerable<Item> Get(){
+            return new ManageItems().Get();
+            //return items;
         }
 
         // GET api/<ItemsController>/5
         [HttpGet("{id}")]
         public Item Get(int id)
         {
-            return items.Find(item => item.ID == id);
+            return new ManageItems().Get(id);
+            //return items.Find(item => item.ID == id);
         }
 
         // POST api/<ItemsController>
         [HttpPost]
         public void Post([FromBody] Item value)
         {
-            items.Add(value);
+            new ManageItems().Post(value);
+            //items.Add(value);
         }
 
         // PUT api/<ItemsController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] Item value){
+
+            new ManageItems().Put(id,value);
+            /*
             Item item = Get(id);
             if (item != null){
                 item.ID = value.ID;
@@ -56,25 +62,30 @@ namespace SimpleRestService.Controllers
                 item.Quality = value.Quality;
                 item.Quantity = value.Quantity;
             }
+            */
         }
 
         // DELETE api/<ItemsController>/5
         [HttpDelete("{id}")]
         public void Delete(int id){
+
+            new ManageItems().Delete(id);
+            /*
             Item item = Get(id);
             items.Remove(item);
+            */
         }
 
         //GetFromSubstring api/substring/
         [HttpGet("name/{substring}")]
-        public IEnumerable<Item> getByName(string substring){
+        public IEnumerable<Item> GetByName(string substring){
             return items.FindAll(item => item.Name.ToLower().Contains(substring));
         }
 
 
         // GET by quality
         [HttpGet("quality/{query}")]
-        public IEnumerable<Item> getByQuality(string query){
+        public IEnumerable<Item> GetByQuality(string query){
             //throw new NotImplementedException();
             return items.FindAll(item => item.Quality.ToLower().Contains(query));
         }
@@ -86,7 +97,7 @@ namespace SimpleRestService.Controllers
         /// <param name="filter">class with an upper and a lower boundry</param>
         /// <returns>array of item withing the boundries</returns>
         [HttpGet("getbyfilter")]
-        public IEnumerable<Item> getByFilter([FromQuery] FilterClass filter){
+        public IEnumerable<Item> GetByFilter([FromQuery] FilterClass filter){
             
             return items.FindAll(item => item.Quantity > filter.LowQuantity && item.Quantity < filter.HighQuantity);
 

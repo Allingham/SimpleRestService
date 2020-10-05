@@ -30,6 +30,23 @@ namespace SimpleRestService
         {
             services.AddControllers();
 
+            services.AddCors(options => {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => 
+                        builder.WithOrigins("http://zealand.dk")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+                    
+                options.AddPolicy("AllowAnyOrigin",
+                        builder => builder.AllowAnyOrigin().
+                    AllowAnyMethod().
+                    AllowAnyHeader());
+                options.AddPolicy("AllowAnyOriginGetPut",
+                        builder => builder.AllowAnyOrigin().
+                            WithMethods("GET", "PUT").
+                    AllowAnyHeader());
+            });
+
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo{
                     Title = "Items API",
@@ -65,6 +82,8 @@ namespace SimpleRestService
             });
 
             app.UseRouting();
+
+            app.UseCors("AllowAnyOriginGetPut");
 
             app.UseAuthorization();
 
