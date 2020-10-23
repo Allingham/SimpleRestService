@@ -29,16 +29,36 @@ namespace SimpleRestService.DButil
                     }
                     sr.Close();
                 }
-                    
             }
-
             return items;
             
             //throw new NotImplementedException();
         }
 
         public Item Get(int id){
-            return Get().ToList().Find(i => i.ID == id);
+            //return Get().ToList().Find(i => i.ID == id);
+
+            List<Item> items = new List<Item>();
+            string query = $"SELECT * FROM dbo.items WHERE Id={id}";
+
+            using (SqlConnection conn = new SqlConnection(connectionstring))
+            {
+                conn.Open();
+                using (SqlCommand com = new SqlCommand(getAll, conn))
+                {
+                    SqlDataReader sr = com.ExecuteReader();
+
+                    while (sr.Read())
+                    {
+                        Item item = ReadNextElement(sr);
+
+                        items.Add(item);
+                    }
+                    sr.Close();
+                }
+            }
+
+            return items[0];
         }
 
         public void Post(Item value){
@@ -78,6 +98,94 @@ namespace SimpleRestService.DButil
             //throw new NotImplementedException();
         }
 
+        public IEnumerable<Item> GetByName(string substring){
+            //List<Item> items = Get().ToList();
+            //return items.FindAll(item => item.Name.ToLower().Contains(substring));
+
+            List<Item> items = new List<Item>();
+            string query = $"SELECT * FROM dbo.items WHERE Name LIKE '%{substring}%'";
+
+            using (SqlConnection conn = new SqlConnection(connectionstring))
+            {
+                conn.Open();
+                using (SqlCommand com = new SqlCommand(getAll, conn))
+                {
+                    SqlDataReader sr = com.ExecuteReader();
+
+                    while (sr.Read())
+                    {
+                        Item item = ReadNextElement(sr);
+
+                        items.Add(item);
+                    }
+                    sr.Close();
+                }
+            }
+
+            return items;
+        }
+
+        public IEnumerable<Item> GetByQuality(string substring)
+        {
+            //throw new NotImplementedException();
+
+            //List<Item> items = Get().ToList();
+            //return items.FindAll(item => item.Quality.ToLower().Contains(query));
+
+
+            List<Item> items = new List<Item>();
+            string query = $"SELECT * FROM dbo.items WHERE Name LIKE '%{substring}%'";
+
+            using (SqlConnection conn = new SqlConnection(connectionstring))
+            {
+                conn.Open();
+                using (SqlCommand com = new SqlCommand(getAll, conn))
+                {
+                    SqlDataReader sr = com.ExecuteReader();
+
+                    while (sr.Read())
+                    {
+                        Item item = ReadNextElement(sr);
+
+                        items.Add(item);
+                    }
+                    sr.Close();
+                }
+            }
+
+            return items;
+        }
+
+        public IEnumerable<Item> GetByFilter(FilterClass filter)
+        {
+            //List<Item> items = Get().ToList();
+            //return items.FindAll(item => item.Quantity > filter.LowQuantity && item.Quantity < filter.HighQuantity);
+
+
+            List<Item> items = new List<Item>();
+            string query = $"SELECT * FROM dbo.items WHERE Quantity > {filter.LowQuantity} AND Quantity < {filter.HighQuantity}";
+
+            using (SqlConnection conn = new SqlConnection(connectionstring))
+            {
+                conn.Open();
+                using (SqlCommand com = new SqlCommand(getAll, conn))
+                {
+                    SqlDataReader sr = com.ExecuteReader();
+
+                    while (sr.Read())
+                    {
+                        Item item = ReadNextElement(sr);
+
+                        items.Add(item);
+                    }
+                    sr.Close();
+                }
+            }
+
+            return items;
+
+        }
+
         protected Item ReadNextElement(SqlDataReader sr){
             Item item = new Item(){
                 ID = sr.GetInt32(0),
@@ -89,5 +197,7 @@ namespace SimpleRestService.DButil
 
             return item;
         }
+
+
     }
 }
